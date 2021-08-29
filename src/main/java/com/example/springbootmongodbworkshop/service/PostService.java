@@ -1,4 +1,5 @@
 package com.example.springbootmongodbworkshop.service;
+
 import com.example.springbootmongodbworkshop.domain.Post;
 import com.example.springbootmongodbworkshop.domain.User;
 import com.example.springbootmongodbworkshop.dto.UserDTO;
@@ -8,6 +9,7 @@ import com.example.springbootmongodbworkshop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,13 +19,13 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
-    public List<Post> findAll(){
+    public List<Post> findAll() {
         return postRepository.findAll();
     }
 
-    public Post findbyId(String id){
+    public Post findbyId(String id) {
         Optional<Post> post = postRepository.findById(id);
-        if(!post.isPresent()){
+        if (!post.isPresent()) {
             throw new ObjectNotFoundException("Post não encontrado");
 
         }
@@ -31,8 +33,14 @@ public class PostService {
         return post.get();
     }
 
-    public List<Post> findByTitleContaining(String text){
-        return postRepository.findByTitleContainingIgnoreCase(text);
+    public List<Post> findByTitleContaining(String text) {
+//        return postRepository.findByTitleContainingIgnoreCase(text);
+        return postRepository.searchTitle(text);
+    }
+
+    public List<Post> fullSearch(String text, Date minDate, Date maxDate) {
+        maxDate = new Date(maxDate.getTime() + 24 * 60 * 60 * 100);
+        return postRepository.fullSearch(text, minDate, maxDate);
     }
 
 

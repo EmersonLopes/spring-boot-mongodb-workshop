@@ -1,19 +1,14 @@
 package com.example.springbootmongodbworkshop.resources;
 
 import com.example.springbootmongodbworkshop.domain.Post;
-import com.example.springbootmongodbworkshop.domain.User;
-import com.example.springbootmongodbworkshop.dto.UserDTO;
 import com.example.springbootmongodbworkshop.resources.util.URL;
 import com.example.springbootmongodbworkshop.service.PostService;
-import com.example.springbootmongodbworkshop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/posts")
@@ -34,6 +29,18 @@ public class PostResource {
         text = URL.decodeParam(text);
 
         return ResponseEntity.ok().body(postService.findByTitleContaining(text));
+    }
+
+    @GetMapping("/fullsearch")
+    public ResponseEntity<List<Post>> fullsearch(
+            @RequestParam(value = "text", defaultValue = "") String text,
+            @RequestParam(value = "minDate", defaultValue = "") String minDate,
+            @RequestParam(value = "maxDate", defaultValue = "") String maxDate
+    ) {
+        text = URL.decodeParam(text);
+        Date min  = URL.convertDate(minDate, new Date(0L));
+        Date max  = URL.convertDate(maxDate, new Date(0L));
+        return ResponseEntity.ok().body(postService.fullSearch(text, min, max));
     }
 
 }
